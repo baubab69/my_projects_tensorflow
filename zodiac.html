@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Предсказание Зодиака</title>
+</head>
+<body>
+    <h1>AI Предсказание Знака Зодиака</h1>
+    <form action="/" method="POST">
+        <label for="birthdate">Введите вашу дату рождения:</label>
+        <input type="date" id="birthdate" name="birthdate" required>
+        <br><br>
+        <input type="submit" value="Узнать знак зодиака">
+    </form>
+    <br>
+    {% if result %}
+        <p><strong>{{ result }}</strong></p>
+    {% endif %}
+</body>
+</html>

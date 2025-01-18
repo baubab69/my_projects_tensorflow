@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Анализ Инвестиций</title>
+</head>
+<body>
+    <h1>Анализ Инвестиционных Данных</h1>
+    <form action="/" method="POST">
+        <label for="investment">Введите данные инвестиций (через запятую):</label><br>
+        <textarea id="investment" name="investment" rows="4" cols="50"></textarea><br><br>
+        <input type="submit" value="Анализировать">
+    </form>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анализ Инвестиций</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Анализ Инвестиционных Данных</h1>
+    <form id="investmentForm">
+        <label for="investment">Введите данные инвестиций (через запятую):</label><br>
+        <textarea id="investment" name="investment" rows="4" cols="50" required></textarea><br><br>
+        <input type="submit" value="Анализировать">
+    </form>
+    <br>
+    <canvas id="chart" width="400" height="200"></canvas>
+
+    <script>
+        document.getElementById("investmentForm").onsubmit = async function(event) {
+            event.preventDefault();
+            const investment = document.getElementById("investment").value;
+
+            try {
+                const response = await fetch("/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `investment=${encodeURIComponent(investment)}`
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    alert(errorText);
+                    return;
+                }
+
+                const data = await response.json();
+                renderChart(data);
+            } catch (error) {
+                alert("Ошибка: не удалось отправить данные.");
+            }
+        };
+
+        function renderChart(data) {
+            const ctx = document.getElementById("chart").getContext("2d");
+            new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: data.amounts.map((_, i) => `Инвестиция ${i + 1}`),
+                    datasets: [
+                        {
+                            label: "Кластер",
+                            data: data.clusters,
+                            backgroundColor: "rgba(75, 192, 192, 0.6)"
+                        },
+                        {
+                            label: "Риск",
+                            data: data.risks,
+                            backgroundColor: "rgba(255, 99, 132, 0.6)"
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: "top" }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
